@@ -25,16 +25,17 @@ def get_images_from_folder(img_path):
     img_names = os.listdir(img_path)
     for img in img_names:
         if 'COVID' in img:
-            labels.append(0)
+            labels.append(torch.tensor([0]))
         elif 'Viral' in img:
-            labels.append(1)
+            labels.append(torch.tensor([1]))
         else:
-            labels.append(2)
+            labels.append(torch.tensor([2]))
         full_path = os.path.join(img_path, img)
-        im = imageio.imread(full_path)
-        # im_pil = Image.fromarray(im)
-
-        all_images.append(im)
+        img = imageio.imread(full_path)
+        new_img = transform.resize(img, (256,256))
+        new_img /= 255.0
+        img_tensor = torch.FloatTensor(new_img)
+        all_images.append(img_tensor)
     return all_images, labels, img_names
 
 #################################################################################################

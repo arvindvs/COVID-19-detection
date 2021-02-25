@@ -5,7 +5,7 @@ class BaselineFCCOVIDDetector(nn.Module):
     def __init__(self):
         super(BaselineFCCOVIDDetector, self).__init__()
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(3*256*256, 256)
+        self.fc1 = nn.Linear(256*256, 256)
         self.fc2 = nn.Linear(256, 3)
         
     
@@ -19,7 +19,7 @@ class BaselineFCCOVIDDetector(nn.Module):
 class BaselineConvCOVIDDetector(nn.Module):
     def __init__(self):
         super(BaselineConvCOVIDDetector, self).__init__()
-        self.conv = nn.Conv2d(3, 16, kernel_size=5, stride=1, padding=2)
+        self.conv = nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2)
         self.maxpool = nn.MaxPool2d(kernel_size=2)
         self.relu = nn.ReLU()
         self.flatten = nn.Flatten()
