@@ -1,0 +1,16 @@
+﻿FILE NAME,LABEL,FORMAT,SIZE,URL
+COVID (1),0,PNG,256*256,https://sirm.org/category/senza-categoria/covid-19/
+COVID (10),0,PNG,256*256,https://sirm.org/category/senza-categoria/covid-19/
+COVID (100),0,PNG,256*256,https://sirm.org/category/senza-categoria/covid-19/
+COVID (1000),0,PNG,256*256,https://github.com/ieee8023/covid-chestxray-dataset
+COVID (1001),0,PNG,256*256,https://github.com/ieee8023/covid-chestxray-dataset
+Viral Pneumonia (1),1,PNG,1024*1024,https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia
+Viral Pneumonia (10),1,PNG,1024*1024,https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia
+Viral Pneumonia (100),1,PNG,1024*1024,https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia
+Viral Pneumonia (1000),1,PNG,1024*1024,https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia
+Viral Pneumonia (1001),1,PNG,1024*1024,https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia
+NORMAL (1),2,PNG,1024*1024,https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia
+NORMAL (10),2,PNG,1024*1024,https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia
+NORMAL (100),2,PNG,1024*1024,https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia
+NORMAL (1002),2,PNG,1024*1024,https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia
+NORMAL (1003),2,PNG,1024*1024,https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia
