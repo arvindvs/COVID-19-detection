@@ -7,7 +7,7 @@ from torch import nn
 from dataLoader import COVIDDataset
 from torchvision import transforms
 
-csv_file='data/milestone_images/milestone_metadata.csv'
+csv_file='data/milestone_metadata.csv'
 root_dir='data/milestone_images'
 
 batch_size=32
@@ -35,7 +35,7 @@ def train():
     dataloaders['val'] = DataLoader(val_dataset, batch_size=batch_size,
                         shuffle=True, num_workers=0)
 
-    model = BaselineConvCOVIDDetector()
+    model = BaselineFCCOVIDDetector()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
@@ -64,8 +64,6 @@ def train():
             
             outputs = model(imgs)
             preds = torch.argmax(outputs, dim=1)
-            print(preds)
-            print(labels)
             total_correct += torch.sum(preds == labels)
             num_batches += 1
         val_acc = total_correct/val_size
