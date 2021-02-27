@@ -35,7 +35,7 @@ def train():
     dataloaders['val'] = DataLoader(val_dataset, batch_size=batch_size,
                         shuffle=True, num_workers=0)
 
-    model = BaselineFCCOVIDDetector()
+    model = BaselineConvCOVIDDetector()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
