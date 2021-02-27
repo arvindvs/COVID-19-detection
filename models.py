@@ -11,7 +11,9 @@ class BaselineFCCOVIDDetector(nn.Module):
         
     
     def forward(self, x):
+        # x: 256 x 256
         x = self.flatten(x)
+        # 1 x 256*256 = 1 x 64k
         x = self.fc1(x)
         x = self.relu(x)
         x = self.fc2(x)
