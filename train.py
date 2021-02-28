@@ -6,6 +6,7 @@ import numpy as np
 from torch import nn
 from dataLoader import COVIDDataset
 from torchvision import transforms
+import matplotlib.pyplot as plt
 
 csv_file='data/milestone_images/milestone_metadata.csv'
 root_dir='data/milestone_images'
@@ -35,10 +36,11 @@ def train():
     dataloaders['val'] = DataLoader(val_dataset, batch_size=batch_size,
                         shuffle=True, num_workers=0)
 
-    model = BaselineConvCOVIDDetector()
+    model = BaselineFCCOVIDDetector()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-
+    train_loss = [] 
+    val_loss = []
     for epoch in range(num_epochs):
         model.train()
         for i_batch, sample_batched in enumerate(dataloaders['train']):
@@ -48,6 +50,7 @@ def train():
             optimizer.zero_grad()
             outputs = model(imgs)
             loss = criterion(outputs, labels)
+            train_loss.append(loss)
             loss.backward()
             optimizer.step()
 
@@ -63,16 +66,24 @@ def train():
             labels = sample_batched['label'] # shape(batch_size,)
             
             outputs = model(imgs)
+            loss = criterion(outputs, labels)
+            val_loss.append(loss)
             preds = torch.argmax(outputs, dim=1)
-            print(preds)
-            print(labels)
+            #print(preds)
+            #print(labels)
             total_correct += torch.sum(preds == labels)
             num_batches += 1
         val_acc = total_correct/val_size
         print(f'epoch {epoch} val accuracy: {val_acc}')
-            
+    plt.plot(range(len(train_loss)), train_loss )  
+    plt.title("Training set loss vs. iteration")
+    plt.show()    
+    plt.plot(range(len(val_loss)), val_loss )      
+    plt.title("Validation set loss vs. iteration") 
+    plt.show()
 
 
 
 if __name__ == '__main__':
-    train()
+    train() 
+    
