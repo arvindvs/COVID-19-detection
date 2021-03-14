@@ -69,11 +69,8 @@ def train():
             loss = criterion(outputs, labels)
             val_loss.append(loss)
             preds = torch.argmax(outputs, dim=1)
-<<<<<<< HEAD
             #print(preds)
             #print(labels)
-=======
->>>>>>> 1a0f3ae36bfe0b81056ecf23d136f96858907bd5
             total_correct += torch.sum(preds == labels)
             num_batches += 1
         val_acc = total_correct/val_size
