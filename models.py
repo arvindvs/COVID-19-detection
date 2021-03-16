@@ -4,7 +4,7 @@ import torchvision
 
 
 class COVIDResNet(nn.Module):
-  def __init__(self, in_channels=1, num_classes=3):
+  def __init__(self, num_classes=3, in_channels=1):
     super(COVIDResNet, self).__init__()
 
     # Load a pretrained resnet model from torchvision.models in Pytorch

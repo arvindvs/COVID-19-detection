@@ -10,12 +10,15 @@ import matplotlib.pyplot as plt
 
 csv_file='data/milestone/milestone_metadata.csv'
 root_dir='data/milestone/milestone_images'
+save_dir = 'saved_models/'
 
 batch_size=32
 img_size=256
 num_epochs = 50
 num_classes = 3
-print_frequency=2
+print_frequency = 20
+save_frequency = 100
+
 
 
 def train():
@@ -66,6 +69,8 @@ def train():
 
             if i_batch % print_frequency == 0:
                 print(f'epoch {epoch}, iter {i_batch}: loss = {loss}')
+            if i_batch % print_frequency == 0:
+                torch.save(model, os.path.join(save_dir, model.__class__.__name__ + '.ckpt'))
         
         total_correct = 0.0
         num_batches = 0.0
