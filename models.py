@@ -51,12 +51,16 @@ class BaselineFCCOVIDDetector(nn.Module):
         super(BaselineFCCOVIDDetector, self).__init__()
         self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(256*256, 256)
+        self.relu = nn.ReLU()
         self.fc2 = nn.Linear(256, 3)
         
     
     def forward(self, x):
+        # x: 256 x 256
         x = self.flatten(x)
+        # 1 x 256*256 = 1 x 64k
         x = self.fc1(x)
+        x = self.relu(x)
         x = self.fc2(x)
         out = F.log_softmax(x, dim=1)
         return out
@@ -66,18 +70,20 @@ class BaselineConvCOVIDDetector(nn.Module):
         super(BaselineConvCOVIDDetector, self).__init__()
         self.conv = nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2)
         self.maxpool = nn.MaxPool2d(kernel_size=2)
-        self.relu = nn.ReLU()
+        self.relu1 = nn.ReLU()
         self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(128*128*16, 256)
+        self.relu2 = nn.ReLU()
         self.fc2 = nn.Linear(256, 3)
         
     
     def forward(self, x):
         x = self.conv(x)
         x = self.maxpool(x)
-        x = self.relu(x)
+        x = self.relu1(x)
         x = self.flatten(x)
         x = self.fc1(x)
+        x = self.relu2(x)
         x = self.fc2(x)
         out = F.log_softmax(x, dim=1)
         return out
