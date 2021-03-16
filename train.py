@@ -1,4 +1,4 @@
-from models import BaselineFCCOVIDDetector, BaselineConvCOVIDDetector, ConvCOVIDDetector
+from models import BaselineFCCOVIDDetector, BaselineConvCOVIDDetector, ConvCOVIDDetector, COVIDResNet
 from torch.utils.data import Dataset, DataLoader
 import torch
 import torch.optim as optim
@@ -43,7 +43,7 @@ def train():
     dataloaders['val'] = DataLoader(val_dataset, batch_size=batch_size,
                         shuffle=True, num_workers=0)
 
-    model = ConvCOVIDDetector(num_classes)
+    model = COVIDResNet(num_classes)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     train_loss = [] 

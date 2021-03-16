@@ -1,6 +1,29 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
+
+class COVIDResNet(nn.Module):
+  def __init__(self, in_channels=1, num_classes=3):
+    super(MnistResNet, self).__init__()
+
+    # Load a pretrained resnet model from torchvision.models in Pytorch
+    self.model = torchvision.models.resnet50(pretrained=True)
+
+    # Change the input layer to take Grayscale image, instead of RGB images. 
+    # Hence in_channels is set as 1 or 3 respectively
+    # original definition of the first layer on the ResNet class
+    # self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
+    self.model.conv1 = nn.Conv2d(in_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
+    
+    # Change the output layer to output 3 classes instead of 1000 classes
+    num_ftrs = self.model.fc.in_features
+    self.model.fc = nn.Linear(num_ftrs, num_classes)
+
+
+  def forward(self, x):
+    return self.model(x)
+
+
 class ConvSkipBlock(nn.Module):
     def __init__(self, num_channels, hidden_channels, out_channels):
         super(ConvSkipBlock, self).__init__()
