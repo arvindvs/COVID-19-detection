@@ -7,6 +7,7 @@ from torch import nn
 from dataLoader import COVIDDataset
 from torchvision import transforms
 import matplotlib.pyplot as plt
+import os
 
 csv_file='data/milestone/milestone_metadata.csv'
 root_dir='data/milestone/milestone_images'
@@ -16,8 +17,8 @@ batch_size=32
 img_size=256
 num_epochs = 50
 num_classes = 3
-print_frequency = 20
-save_frequency = 100
+print_frequency = 2
+save_frequency = 10
 
 
 
@@ -33,6 +34,8 @@ def train():
                                                transforms.Resize((img_size,img_size)),
                                                transforms.ToTensor()
                                            ]))
+    if not os.path.isdir(save_dir):
+        os.makedirs(save_dir)
 
     train_size = int(0.9 * len(dataset))
     
@@ -46,7 +49,7 @@ def train():
     dataloaders['val'] = DataLoader(val_dataset, batch_size=batch_size,
                         shuffle=True, num_workers=0)
 
-    model = COVIDResNet(in_channels=1,num_classes=num_classes)
+    model = ConvCOVIDDetector(num_classes=num_classes)
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
@@ -69,8 +72,15 @@ def train():
 
             if i_batch % print_frequency == 0:
                 print(f'epoch {epoch}, iter {i_batch}: loss = {loss}')
-            if i_batch % print_frequency == 0:
-                torch.save(model, os.path.join(save_dir, model.__class__.__name__ + '.ckpt'))
+            if i_batch % save_frequency == 0:
+                save_path = os.path.join(save_dir, model.__class__.__name__ + '.ckpt')
+                print(f'epoch {epoch}, iter {i_batch}: saving model to {save_path}')
+                torch.save({
+                    'epoch': epoch,
+                    'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'loss': loss,
+                }, save_path)
         
         total_correct = 0.0
         num_batches = 0.0
