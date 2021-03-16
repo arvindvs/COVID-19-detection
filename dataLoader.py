@@ -39,7 +39,7 @@ class COVIDDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        img_name = os.path.join(self.root_dir, self.get_name(idx) + '.png')
+        img_name = os.path.join(self.root_dir, self.get_name(idx))
         image = Image.fromarray(io.imread(img_name))
         label = int(self.get_label(idx))
         sample = {'image': image, 'label': label}
@@ -51,6 +51,8 @@ class COVIDDataset(Dataset):
 
     def get_name(self, idx):
         name = self.frame.iloc[idx, 0]
+        if '.png' not in name:
+            return name + '.png'
         return name
 
     def get_label(self, idx):
