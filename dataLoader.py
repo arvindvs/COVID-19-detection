@@ -30,7 +30,7 @@ class COVIDDataset(Dataset):
         self.frame = pd.read_csv(csv_file)
         self.root_dir = root_dir
         self.transform = transform
-        assert len(self.frame) == len([name for name in os.listdir(self.root_dir) if os.path.isfile(name)])
+        assert len(self.frame) == len([name for name in os.listdir(self.root_dir) if os.path.isfile(os.path.join(self.root_dir, name))])
 
     def __len__(self):
         return len(self.frame)
@@ -51,6 +51,7 @@ class COVIDDataset(Dataset):
 
     def get_name(self, idx):
         name = self.frame.iloc[idx, 0]
+        return name
 
     def get_label(self, idx):
         try:
