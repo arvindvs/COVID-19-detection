@@ -1,4 +1,4 @@
-from models import BaselineFCCOVIDDetector, BaselineConvCOVIDDetector, ConvCOVIDDetectorA, ConvCOVIDDetectorB, COVIDResNet
+from models import BaselineFCCOVIDDetector, BaselineConvCOVIDDetector, ConvCOVIDDetectorA, ConvCOVIDDetectorB, COVIDResNet, ConvCOVIDDetectorBSmall
 from torch.utils.data import Dataset, DataLoader
 import torch
 import torch.optim as optim
@@ -62,6 +62,7 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
     val_loss = []
     val_accs = []
     iteration = 0
+    print(f'Training on model {model.__class__.__name__}')
     for epoch in range(num_epochs):
         model.train()
         for i_batch, sample_batched in enumerate(dataloaders['train']):

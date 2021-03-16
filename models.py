@@ -100,6 +100,31 @@ class ConvCOVIDDetectorB(nn.Module):
         out = F.log_softmax(x, dim=1)
         return out
 
+class ConvCOVIDDetectorBSmall(nn.Module):
+    def __init__(self, num_classes):
+        super(ConvCOVIDDetectorB, self).__init__()
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2)
+        self.relu = nn.ReLU()
+        self.conv_skip1 = ConvSkipBlock(16, 16, 64, drop_prob=0.1)
+        self.conv_skip2 = ConvSkipBlock(64, 32, 128, drop_prob=0.2)
+        self.maxpool = nn.MaxPool2d(kernel_size=2)
+        self.flatten = nn.Flatten()
+        self.fc1 = nn.Linear(128*64*64, 512)
+        self.fc2 = nn.Linear(512, num_classes)
+        
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.relu(x)
+        x = self.conv_skip1(x)
+        x = self.maxpool(x)
+        x = self.conv_skip2(x)
+        x = self.maxpool(x)
+        x = self.flatten(x)
+        x = self.fc1(x)
+        x = self.fc2(x)
+        out = F.log_softmax(x, dim=1)
+        return out
+
 class BaselineFCCOVIDDetector(nn.Module):
     def __init__(self):
         super(BaselineFCCOVIDDetector, self).__init__()
