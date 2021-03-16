@@ -44,6 +44,7 @@ def train():
                         shuffle=True, num_workers=0)
 
     model = COVIDResNet(in_channels=1,num_classes=num_classes)
+    model = model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     train_loss = [] 
@@ -53,6 +54,8 @@ def train():
         for i_batch, sample_batched in enumerate(dataloaders['train']):
             imgs = sample_batched['image'].to(device) # shape(batch_size, 1, img_size, img_size)
             labels = sample_batched['label'].to(device) # shape(batch_size,)
+            imgs = imgs.to(device)
+            labels = labels.to(device)
 
             optimizer.zero_grad()
             outputs = model(imgs)
@@ -64,19 +67,22 @@ def train():
             if i_batch % print_frequency == 0:
                 print(f'epoch {epoch}, iter {i_batch}: loss = {loss}')
         
-        model.eval()
         total_correct = 0.0
         num_batches = 0.0
-        for i_batch, sample_batched in enumerate(dataloaders['val']):
-            imgs = sample_batched['image'] # shape(batch_size, 1, img_size, img_size)
-            labels = sample_batched['label'] # shape(batch_size,)
-            
-            outputs = model(imgs)
-            loss = criterion(outputs, labels)
-            val_loss.append(loss)
-            preds = torch.argmax(outputs, dim=1)
-            total_correct += torch.sum(preds == labels)
-            num_batches += 1
+        with torch.no_grad():
+            model.eval()
+            for i_batch, sample_batched in enumerate(dataloaders['val']):
+                imgs = sample_batched['image'] # shape(batch_size, 1, img_size, img_size)
+                labels = sample_batched['label'] # shape(batch_size,)
+                imgs = imgs.to(device)
+                labels = labels.to(device)
+
+                outputs = model(imgs)
+                loss = criterion(outputs, labels)
+                val_loss.append(loss)
+                preds = torch.argmax(outputs, dim=1)
+                total_correct += torch.sum(preds == labels)
+                num_batches += 1
         val_acc = total_correct/val_size
         print(f'epoch {epoch} val accuracy: {val_acc}')
     plt.plot(range(len(train_loss)), train_loss )  
