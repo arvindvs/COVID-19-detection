@@ -20,8 +20,8 @@ batch_size=32
 img_size=256
 # num_epochs = 50
 # num_classes = 3
-print_frequency = 2
-save_frequency = 10
+print_frequency = 1000
+save_frequency = 10000
 
 
 
