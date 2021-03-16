@@ -13,7 +13,7 @@ from torchvision import datasets, utils
 from scipy import misc
 import glob
 import imageio
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 class COVIDDataset(Dataset):
@@ -41,6 +41,7 @@ class COVIDDataset(Dataset):
 
         img_name = os.path.join(self.root_dir, self.get_name(idx))
         image = Image.fromarray(io.imread(img_name))
+        image = ImageOps.grayscale(image)
         label = int(self.get_label(idx))
         sample = {'image': image, 'label': label}
 
