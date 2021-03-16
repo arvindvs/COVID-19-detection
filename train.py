@@ -19,6 +19,13 @@ print_frequency=2
 
 
 def train():
+    if torch.cuda.is_available():  
+        print("Running on GPU.")
+        dev = "cuda:0" 
+    else:  
+        print("Running on CPU.")
+        dev = "cpu"
+    device = torch.device(dev)
     dataset = COVIDDataset(csv_file=csv_file, root_dir=root_dir, transform=transforms.Compose([
                                                transforms.Resize((img_size,img_size)),
                                                transforms.ToTensor()
@@ -44,8 +51,8 @@ def train():
     for epoch in range(num_epochs):
         model.train()
         for i_batch, sample_batched in enumerate(dataloaders['train']):
-            imgs = sample_batched['image'] # shape(batch_size, 1, img_size, img_size)
-            labels = sample_batched['label'] # shape(batch_size,)
+            imgs = sample_batched['image'].to(device) # shape(batch_size, 1, img_size, img_size)
+            labels = sample_batched['label'].to(device) # shape(batch_size,)
 
             optimizer.zero_grad()
             outputs = model(imgs)
