@@ -25,9 +25,9 @@ class ConvSkipBlock(nn.Module):
 class ConvCOVIDDetector(nn.Module):
     def __init__(self, num_classes):
         super(ConvCOVIDDetector, self).__init__()
-        self.conv_skip1 = ConvSkipBlock(1, 16, 16)
-        self.conv_skip2 = ConvSkipBlock(16, 32, 32)
-        self.conv_skip3 = ConvSkipBlock(32, 32, 32)
+        self.conv_skip1 = ConvSkipBlock(1, 16, 32)
+        self.conv_skip2 = ConvSkipBlock(32, 16, 64)
+        self.conv_skip3 = ConvSkipBlock(64, 16, 32)
         self.maxpool = nn.MaxPool2d(kernel_size=2)
         self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(32*32*32, 256)

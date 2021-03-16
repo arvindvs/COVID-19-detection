@@ -54,7 +54,6 @@ def train():
             loss.backward()
             optimizer.step()
 
-
             if i_batch % print_frequency == 0:
                 print(f'epoch {epoch}, iter {i_batch}: loss = {loss}')
         
