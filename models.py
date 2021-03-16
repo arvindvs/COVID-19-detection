@@ -46,9 +46,9 @@ class ConvSkipBlock(nn.Module):
         out = self.relu(out)
         return out
 
-class ConvCOVIDDetector(nn.Module):
+class ConvCOVIDDetectorA(nn.Module):
     def __init__(self, num_classes):
-        super(ConvCOVIDDetector, self).__init__()
+        super(ConvCOVIDDetectorA, self).__init__()
         self.conv_skip1 = ConvSkipBlock(1, 16, 32)
         self.conv_skip2 = ConvSkipBlock(32, 16, 64)
         self.conv_skip3 = ConvSkipBlock(64, 16, 32)
@@ -58,6 +58,34 @@ class ConvCOVIDDetector(nn.Module):
         self.fc2 = nn.Linear(256, num_classes)
         
     def forward(self, x):
+        x = self.conv_skip1(x)
+        x = self.maxpool(x)
+        x = self.conv_skip2(x)
+        x = self.maxpool(x)
+        x = self.conv_skip3(x)
+        x = self.maxpool(x)
+        x = self.flatten(x)
+        x = self.fc1(x)
+        x = self.fc2(x)
+        out = F.log_softmax(x, dim=1)
+        return out
+
+class ConvCOVIDDetectorB(nn.Module):
+    def __init__(self, num_classes):
+        super(ConvCOVIDDetectorB, self).__init__()
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2)
+        self.relu = nn.ReLU()
+        self.conv_skip1 = ConvSkipBlock(16, 16, 64)
+        self.conv_skip2 = ConvSkipBlock(64, 32, 128)
+        self.conv_skip3 = ConvSkipBlock(128, 64, 128)
+        self.maxpool = nn.MaxPool2d(kernel_size=2)
+        self.flatten = nn.Flatten()
+        self.fc1 = nn.Linear(128*32*32, 512)
+        self.fc2 = nn.Linear(512, num_classes)
+        
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.relu(x)
         x = self.conv_skip1(x)
         x = self.maxpool(x)
         x = self.conv_skip2(x)

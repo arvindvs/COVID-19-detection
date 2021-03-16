@@ -1,4 +1,4 @@
-from models import BaselineFCCOVIDDetector, BaselineConvCOVIDDetector, ConvCOVIDDetector, COVIDResNet
+from models import BaselineFCCOVIDDetector, BaselineConvCOVIDDetector, ConvCOVIDDetectorA, ConvCOVIDDetectorB, COVIDResNet
 from torch.utils.data import Dataset, DataLoader
 import torch
 import torch.optim as optim
@@ -20,8 +20,8 @@ batch_size=32
 img_size=256
 # num_epochs = 50
 # num_classes = 3
-print_frequency = 1000
-save_frequency = 10000
+print_frequency = 100
+save_frequency = 500
 
 
 
@@ -54,7 +54,7 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
     dataloaders['val'] = DataLoader(val_dataset, batch_size=batch_size,
                         shuffle=True, num_workers=0)
 
-    model = ConvCOVIDDetector(num_classes=num_classes)
+    model = ConvCOVIDDetectorB(num_classes=num_classes)
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
@@ -102,7 +102,7 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
 
                 outputs = model(imgs)
                 loss = criterion(outputs, labels)
-                val_losses.append(loss)
+                val_losses.append(loss.item())
                 preds = torch.argmax(outputs, dim=1)
                 total_correct += torch.sum(preds == labels)
                 num_batches += 1
