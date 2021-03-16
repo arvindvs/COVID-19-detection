@@ -1,10 +1,11 @@
 import torch.nn as nn
 import torch.nn.functional as F
+import torchvision
 
 
 class COVIDResNet(nn.Module):
   def __init__(self, in_channels=1, num_classes=3):
-    super(MnistResNet, self).__init__()
+    super(COVIDResNet, self).__init__()
 
     # Load a pretrained resnet model from torchvision.models in Pytorch
     self.model = torchvision.models.resnet50(pretrained=True)

@@ -43,7 +43,7 @@ def train():
     dataloaders['val'] = DataLoader(val_dataset, batch_size=batch_size,
                         shuffle=True, num_workers=0)
 
-    model = COVIDResNet(num_classes)
+    model = COVIDResNet(in_channels=1,num_classes=num_classes)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     train_loss = [] 
