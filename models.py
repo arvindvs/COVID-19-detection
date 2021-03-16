@@ -26,13 +26,14 @@ class COVIDResNet(nn.Module):
 
 
 class ConvSkipBlock(nn.Module):
-    def __init__(self, num_channels, hidden_channels, out_channels):
+    def __init__(self, num_channels, hidden_channels, out_channels, drop_prob=0):
         super(ConvSkipBlock, self).__init__()
         self.conv1 = nn.Conv2d(num_channels, hidden_channels, kernel_size=3, stride=1, padding=1)
         self.bn = nn.BatchNorm2d(hidden_channels)
         self.relu = nn.ReLU()
         self.conv2 = nn.Conv2d(hidden_channels, num_channels, kernel_size=3, stride=1, padding=1)
         self.conv3 = nn.Conv2d(num_channels, out_channels, kernel_size=3, stride=1, padding=1)
+        self.dropout = nn.Dropout(p=drop_prob)
     
     def forward(self, x):
         x_tmp = x
@@ -44,6 +45,7 @@ class ConvSkipBlock(nn.Module):
         out = self.relu(out)
         out = self.conv3(out)
         out = self.relu(out)
+        out = self.dropout(out)
         return out
 
 class ConvCOVIDDetectorA(nn.Module):
@@ -75,9 +77,9 @@ class ConvCOVIDDetectorB(nn.Module):
         super(ConvCOVIDDetectorB, self).__init__()
         self.conv1 = nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2)
         self.relu = nn.ReLU()
-        self.conv_skip1 = ConvSkipBlock(16, 16, 64)
-        self.conv_skip2 = ConvSkipBlock(64, 32, 128)
-        self.conv_skip3 = ConvSkipBlock(128, 64, 128)
+        self.conv_skip1 = ConvSkipBlock(16, 16, 64, drop_prob=0.1)
+        self.conv_skip2 = ConvSkipBlock(64, 32, 128, drop_prob=0.2)
+        self.conv_skip3 = ConvSkipBlock(128, 64, 128, drop_prob=0.3)
         self.maxpool = nn.MaxPool2d(kernel_size=2)
         self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(128*32*32, 512)
