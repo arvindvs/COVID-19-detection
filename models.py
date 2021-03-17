@@ -48,6 +48,7 @@ class ConvSkipBlock(nn.Module):
         out = self.dropout(out)
         return out
 
+
 class ConvCOVIDDetectorA(nn.Module):
     def __init__(self, num_classes):
         super(ConvCOVIDDetectorA, self).__init__()
@@ -71,6 +72,7 @@ class ConvCOVIDDetectorA(nn.Module):
         x = self.fc2(x)
         out = F.log_softmax(x, dim=1)
         return out
+
 
 class ConvCOVIDDetectorB(nn.Module):
     def __init__(self, num_classes):
@@ -100,9 +102,10 @@ class ConvCOVIDDetectorB(nn.Module):
         out = F.log_softmax(x, dim=1)
         return out
 
-class ConvCOVIDDetectorBSmall(nn.Module):
+
+class ConvCOVIDDetectorC(nn.Module):
     def __init__(self, num_classes):
-        super(ConvCOVIDDetectorBSmall, self).__init__()
+        super(ConvCOVIDDetectorC, self).__init__()
         self.conv1 = nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2)
         self.relu = nn.ReLU()
         self.conv_skip1 = ConvSkipBlock(16, 16, 64, drop_prob=0.2)
@@ -125,14 +128,14 @@ class ConvCOVIDDetectorBSmall(nn.Module):
         out = F.log_softmax(x, dim=1)
         return out
 
+
 class BaselineFCCOVIDDetector(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes):
         super(BaselineFCCOVIDDetector, self).__init__()
         self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(256*256, 256)
         self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(256, 3)
-        
+        self.fc2 = nn.Linear(256, num_classes)        
     
     def forward(self, x):
         # x: 256 x 256
@@ -144,8 +147,9 @@ class BaselineFCCOVIDDetector(nn.Module):
         out = F.log_softmax(x, dim=1)
         return out
 
+
 class BaselineConvCOVIDDetector(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes):
         super(BaselineConvCOVIDDetector, self).__init__()
         self.conv = nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2)
         self.maxpool = nn.MaxPool2d(kernel_size=2)
@@ -153,8 +157,7 @@ class BaselineConvCOVIDDetector(nn.Module):
         self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(128*128*16, 256)
         self.relu2 = nn.ReLU()
-        self.fc2 = nn.Linear(256, 3)
-        
+        self.fc2 = nn.Linear(256, num_classes)
     
     def forward(self, x):
         x = self.conv(x)

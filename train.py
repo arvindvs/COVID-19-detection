@@ -1,4 +1,4 @@
-from models import BaselineFCCOVIDDetector, BaselineConvCOVIDDetector, ConvCOVIDDetectorA, ConvCOVIDDetectorB, COVIDResNet, ConvCOVIDDetectorBSmall
+from models import BaselineFCCOVIDDetector, BaselineConvCOVIDDetector, ConvCOVIDDetectorA, ConvCOVIDDetectorB, COVIDResNet, ConvCOVIDDetectorC
 from torch.utils.data import Dataset, DataLoader
 import torch
 import torch.optim as optim
@@ -54,7 +54,7 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
     dataloaders['val'] = DataLoader(val_dataset, batch_size=batch_size,
                         shuffle=True, num_workers=0)
 
-    model = ConvCOVIDDetectorBSmall(num_classes=num_classes)
+    model = ConvCOVIDDetectorC(num_classes=num_classes)
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=1e-4, momentum=0.9, weight_decay=1e-5)
@@ -62,9 +62,10 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
     val_loss = []
     val_accs = []
     iteration = 0
-    print(f'Training on model {model.__class__.__name__}')
+    print(f'Training model {model.__class__.__name__}')
     for epoch in range(num_epochs):
         model.train()
+        total_correct = 0.0
         for i_batch, sample_batched in enumerate(dataloaders['train']):
             iteration += 1
             imgs = sample_batched['image'].to(device) # shape(batch_size, 1, img_size, img_size)
@@ -74,12 +75,12 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
             optimizer.zero_grad()
             outputs = model(imgs)
             loss = criterion(outputs, labels)
-            
+            total_correct += torch.sum(torch.argmax(outputs, dim=1) == labels)
             loss.backward()
             optimizer.step()
 
             if iteration % print_frequency == 0:
-                print(f'epoch {epoch}, iter {i_batch}: loss = {loss}')
+                print(f'epoch {epoch}, iter {i_batch}: train loss = {loss}')
                 train_loss.append(loss)
             if iteration % save_frequency == 0:
                 print(f'epoch {epoch}, iter {i_batch}: saving model to {save_model_path}')
@@ -89,9 +90,9 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
                     'optimizer_state_dict': optimizer.state_dict(),
                     'loss': loss,
                 }, os.path.join(save_model_path, model.__class__.__name__ + '.ckpt'))
-        
+        print(f'epoch {epoch}: train accuracy = {total_correct/train_size}')
+
         total_correct = 0.0
-        num_batches = 0.0
         val_losses = []
         with torch.no_grad():
             model.eval()
@@ -106,11 +107,10 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
                 val_losses.append(loss.item())
                 preds = torch.argmax(outputs, dim=1)
                 total_correct += torch.sum(preds == labels)
-                num_batches += 1
         val_loss.append(np.mean(val_losses))
         val_acc = total_correct/val_size
         val_accs.append(val_acc)
-        print(f'epoch {epoch} val accuracy: {val_acc}')
+        print(f'epoch {epoch}: val loss = {val_loss[-1]}, val accuracy = {val_acc}')
         
         # Plotting
         plt.plot(np.arange(len(train_loss))*print_frequency, train_loss, marker='o')  
