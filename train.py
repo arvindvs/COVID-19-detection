@@ -54,10 +54,10 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
     dataloaders['val'] = DataLoader(val_dataset, batch_size=batch_size,
                         shuffle=True, num_workers=0)
 
-    model = ConvCOVIDDetectorB(num_classes=num_classes)
+    model = ConvCOVIDDetectorBSmall(num_classes=num_classes)
     model = model.to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    optimizer = optim.SGD(model.parameters(), lr=1e-4, momentum=0.9, weight_decay=1e-5)
     train_loss = [] 
     val_loss = []
     val_accs = []
