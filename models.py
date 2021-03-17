@@ -167,22 +167,22 @@ class SimpleConvCOVIDDetector_4layer(nn.Module):
         x = self.conv1(x)
         x = self.maxpool(x)
         x = self.relu(x)
-        x = F.dropout(p=0.1)
+        x = F.dropout(p=0.1)(x)
 
         x = self.conv2(x)
         x = self.maxpool(x)
         x = self.relu(x)
-        x = F.dropout(p=0.2)
+        x = F.dropout(p=0.2)(x)
 
         x = self.conv3(x)
         x = self.maxpool(x)
         x = self.relu(x)
-        x = F.dropout(p=0.5)
+        x = F.dropout(p=0.5)(x)
 
         x = self.conv4(x)
         x = self.maxpool(x)
         x = self.relu(x)
-        
+
         x = self.flatten(x)
         x = self.fc1(x)
         x = self.relu(x)
