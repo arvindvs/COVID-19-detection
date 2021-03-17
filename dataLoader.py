@@ -9,7 +9,7 @@ from skimage import io, transform
 import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader
-from torchvision import datasets, utils
+from torchvision import datasets, utils, transforms
 from scipy import misc
 import glob
 import imageio
@@ -42,11 +42,14 @@ class COVIDDataset(Dataset):
         img_name = os.path.join(self.root_dir, self.get_name(idx))
         image = Image.fromarray(io.imread(img_name))
         image = ImageOps.grayscale(image)
+
         label = int(self.get_label(idx))
         sample = {'image': image, 'label': label}
 
         if self.transform:
             sample['image'] = self.transform(sample['image'])
+
+        sample['image'] = (sample['image'] - torch.mean(sample['image']))/torch.std(sample['image'])
 
         return sample
 
