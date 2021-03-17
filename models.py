@@ -102,7 +102,7 @@ class ConvCOVIDDetectorB(nn.Module):
 
 class ConvCOVIDDetectorBSmall(nn.Module):
     def __init__(self, num_classes):
-        super(ConvCOVIDDetectorB, self).__init__()
+        super(ConvCOVIDDetectorBSmall, self).__init__()
         self.conv1 = nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2)
         self.relu = nn.ReLU()
         self.conv_skip1 = ConvSkipBlock(16, 16, 64, drop_prob=0.1)
