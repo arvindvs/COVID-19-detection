@@ -20,7 +20,7 @@ batch_size=32
 img_size=256
 # num_epochs = 50
 # num_classes = 3
-print_frequency = 100
+print_frequency = 2
 save_frequency = 500
 
 
@@ -42,16 +42,20 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
     os.makedirs(save_plot_path, exist_ok=True)
     os.makedirs(save_model_path, exist_ok=True)
 
-    train_size = int(0.9 * len(dataset))
-    
-    val_size = len(dataset) - train_size
-    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
-    
-    dataloaders = {}
+    train_size = int(0.98 * len(dataset))
+    test_size = (len(dataset) - train_size)//2
+    val_size = len(dataset) - train_size - test_size
 
+    torch.manual_seed(42) # for reproducible test set
+    train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, val_size, test_size])
+    torch.manual_seed(torch.initial_seed())
+
+    dataloaders = {}
     dataloaders['train'] = DataLoader(train_dataset, batch_size=batch_size,
                         shuffle=True, num_workers=0)
     dataloaders['val'] = DataLoader(val_dataset, batch_size=batch_size,
+                        shuffle=True, num_workers=0)
+    dataloaders['test'] = DataLoader(test_dataset, batch_size=batch_size,
                         shuffle=True, num_workers=0)
 
     model = ConvCOVIDDetectorC(num_classes=num_classes)
