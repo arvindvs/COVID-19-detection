@@ -132,7 +132,7 @@ class ConvCOVIDDetectorC(nn.Module):
         self.relu = nn.ReLU()
         self.conv_skip1 = ConvSkipBlockB(16, 32, drop_prob=0.1)
         self.conv_skip2 = ConvSkipBlockB(32, 64, drop_prob=0.3)
-        self.conv_skip3 = ConvSkipBlockB(64, 128, drop_prob=0.5)
+        self.conv_skip3 = ConvSkipBlockB(64, 128, drop_prob=0.6)
         self.maxpool = nn.MaxPool2d(kernel_size=2)
         self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(128*16*16, 512)
