@@ -57,7 +57,7 @@ string_labels = [
 ]
 
 
-def main():
+def main(save):
     model = models.ConvCOVIDDetectorC(num_classes)
     model.load_state_dict(torch.load(checkpoint_path, map_location=torch.device('cpu'))['model_state_dict'])
     dataset = COVIDDataset(csv_file=csv_file, root_dir=data_dir, transform=transforms.Compose([
@@ -66,23 +66,30 @@ def main():
                                            ]))
 
     images, labels = load_batch(dataset)
+    outputs = model(images)
 
-    outputs = torch.argmax(model(images), dim=1)
+    preds = torch.argmax(outputs, dim=1)
+    
+    print("Test accuracy: ", torch.sum(preds == labels)/len(labels))
+    _, topk_preds = torch.topk(outputs, 3, dim=1)
+    topk_correct = torch.eq(labels[:, None, ...], topk_preds).any(dim=1)
+    topk_acc = topk_correct.mean()
+    print("Test top-3 accuracy: ", topk_acc)
 
     cm = confusion_matrix(
         [string_labels[l] for l in labels],
-        [string_labels[o] for o in outputs],
+        [string_labels[o] for o in preds],
         labels=string_labels
     )
 
     if use_percentage:
         data_size = len(images)
         cm = np.multiply(np.divide(cm, data_size), 100)
-
-    df_cm = pd.DataFrame(cm, index=string_labels, columns=string_labels)
-    plt.figure(figsize = (10,10))
-    sn.heatmap(df_cm, annot=show_numbers)
-    plt.savefig(os.path.join(output_path))
+    if save:
+        df_cm = pd.DataFrame(cm, index=string_labels, columns=string_labels)
+        plt.figure(figsize = (10,10))
+        sn.heatmap(df_cm, annot=show_numbers)
+        plt.savefig(os.path.join(output_path))
 
 
 
@@ -102,4 +109,6 @@ def load_batch(dataset):
 
 
 if __name__=="__main__":
-    main()
+    parser.add_argument('-s', '--save', type=bool, default=False, action='store_true', help='save confusion matrix to file')
+    args = parser.parse_args()
+    main(args.save)
