@@ -30,7 +30,7 @@ class COVIDDataset(Dataset):
         self.frame = pd.read_csv(csv_file)
         self.root_dir = root_dir
         self.transform = transform
-        assert len(self.frame) == len([name for name in os.listdir(self.root_dir) if os.path.isfile(os.path.join(self.root_dir, name))])
+        assert len(self.frame) == len([name for name in os.listdir(self.root_dir) if (os.path.isfile(os.path.join(self.root_dir, name)) and name != '.DS_Store')])
 
     def __len__(self):
         return len(self.frame)

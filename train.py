@@ -132,12 +132,14 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
         plt.ylabel('loss')
         plt.savefig(os.path.join(save_plot_path, 'train_loss_' + model.__class__.__name__ + '.png'))    
         plt.clf()
+        
         plt.plot(range(epoch+1), val_loss, marker='o')  
         plt.xlabel('epoch')
         plt.ylabel('avg loss')
         plt.title("Average validation set loss vs. epoch") 
         plt.savefig(os.path.join(save_plot_path, 'val_loss_' + model.__class__.__name__ + '.png'))
         plt.clf()
+
         plt.plot(range(epoch+1), val_accs, marker='o')  
         plt.xlabel('epoch')
         plt.ylabel('accuracy')
