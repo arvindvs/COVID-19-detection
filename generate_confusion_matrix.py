@@ -34,6 +34,9 @@ batch_size=500
 num_classes=16
 num_batches=1
 
+use_percentage=True
+show_numbers=True
+
 string_labels = [
     'COVID',
     'Pneumonia',
@@ -66,19 +69,19 @@ def main():
 
     outputs = torch.argmax(model(images), dim=1)
 
-    os.makedirs(output_path, exist_ok=True)
-
-    print(len(labels))
-    print(len(outputs))
     cm = confusion_matrix(
         [string_labels[l] for l in labels],
         [string_labels[o] for o in outputs],
         labels=string_labels
     )
 
+    if use_percentage:
+        data_size = len(images)
+        cm = np.multiply(np.divide(cm, data_size), 100)
+
     df_cm = pd.DataFrame(cm, index=string_labels, columns=string_labels)
     plt.figure(figsize = (10,10))
-    sn.heatmap(df_cm, annot=True)
+    sn.heatmap(df_cm, annot=show_numbers)
     plt.savefig(os.path.join(output_path))
 
 
@@ -93,7 +96,7 @@ def load_batch(dataset):
     train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, val_size, test_size])
     torch.manual_seed(torch.initial_seed())
 
-    data_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+    data_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
     batch = next(iter(data_loader))
     return batch['image'], batch['label']
 
