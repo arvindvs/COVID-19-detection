@@ -24,15 +24,34 @@ class COVIDResNet(nn.Module):
   def forward(self, x):
     return self.model(x)
 
+class ConvSkipBlockB(nn.Module):
+    def __init__(self, in_channels, out_channels, drop_prob=0.0):
+        super(ConvSkipBlockB, self).__init__()
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1)
+        self.skip_conv = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=0)
+        self.bn = nn.BatchNorm2d(out_channels)
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(p=drop_prob)
+    
+    def forward(self, x):
+        x_tmp = x
+        x_tmp = self.skip_conv(x_tmp)
+        x_tmp = self.relu(x_tmp)
+        out = self.conv(x)
+        out = self.bn(out)
+        out = self.relu(out)
+        out = out + x_tmp
+        out = self.dropout(out)
+        return out
 
 class ConvSkipBlock(nn.Module):
-    def __init__(self, num_channels, hidden_channels, out_channels, drop_prob=0):
+    def __init__(self, in_channels, hidden_channels, out_channels, drop_prob=0):
         super(ConvSkipBlock, self).__init__()
-        self.conv1 = nn.Conv2d(num_channels, hidden_channels, kernel_size=3, stride=1, padding=1)
+        self.conv1 = nn.Conv2d(in_channels, hidden_channels, kernel_size=3, stride=1, padding=1)
         self.bn = nn.BatchNorm2d(hidden_channels)
         self.relu = nn.ReLU()
-        self.conv2 = nn.Conv2d(hidden_channels, num_channels, kernel_size=3, stride=1, padding=1)
-        self.conv3 = nn.Conv2d(num_channels, out_channels, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(hidden_channels, in_channels, kernel_size=3, stride=1, padding=1)
+        self.conv3 = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1)
         self.dropout = nn.Dropout(p=drop_prob)
     
     def forward(self, x):
@@ -109,20 +128,30 @@ class ConvCOVIDDetectorB(nn.Module):
 class ConvCOVIDDetectorC(nn.Module):
     def __init__(self, num_classes):
         super(ConvCOVIDDetectorC, self).__init__()
-        self.conv1 = nn.Conv2d(1, 16, kernel_size=5, stride=1, padding=2)
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=3, stride=1, padding=1)
         self.relu = nn.ReLU()
-        self.conv_skip1 = ConvSkipBlock(16, 16, 32, drop_prob=0.3)
+        self.conv_skip1 = ConvSkipBlockB(16, 32, drop_prob=0.1)
+        self.conv_skip2 = ConvSkipBlockB(32, 64, drop_prob=0.3)
+        self.conv_skip3 = ConvSkipBlockB(64, 128, drop_prob=0.5)
         self.maxpool = nn.MaxPool2d(kernel_size=2)
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(32*64*64, 512)
+        self.fc1 = nn.Linear(128*16*16, 512)
         self.fc2 = nn.Linear(512, num_classes)
         
     def forward(self, x):
         x = self.conv1(x)
         x = self.maxpool(x)
         x = self.relu(x)
+
         x = self.conv_skip1(x)
         x = self.maxpool(x)
+
+        x = self.conv_skip2(x)
+        x = self.maxpool(x)
+
+        x = self.conv_skip3(x)
+        x = self.maxpool(x)
+
         x = self.flatten(x)
         x = self.fc1(x)
         x = self.relu(x)
