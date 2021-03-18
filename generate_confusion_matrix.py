@@ -21,6 +21,7 @@ import seaborn as sn
 import matplotlib.pyplot as plt
 from dataLoader import COVIDDataset
 from sklearn.metrics import confusion_matrix
+import argparse
 
 
 checkpoint_path = os.path.expanduser("~/Downloads/ConvCOVIDDetectorC.ckpt")
@@ -72,7 +73,7 @@ def main(save):
     
     print("Test accuracy: ", torch.sum(preds == labels)/len(labels))
     _, topk_preds = torch.topk(outputs, 3, dim=1)
-    topk_correct = torch.eq(labels[:, None, ...], topk_preds).any(dim=1)
+    topk_correct = torch.eq(labels[:, None, ...], topk_preds).any(dim=1).double()
     topk_acc = topk_correct.mean()
     print("Test top-3 accuracy: ", topk_acc)
 
@@ -109,6 +110,7 @@ def load_batch(dataset):
 
 
 if __name__=="__main__":
-    parser.add_argument('-s', '--save', type=bool, default=False, action='store_true', help='save confusion matrix to file')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--save', default=False, action='store_true', help='save confusion matrix to file')
     args = parser.parse_args()
     main(args.save)
