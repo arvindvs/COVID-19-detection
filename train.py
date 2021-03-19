@@ -132,7 +132,7 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
         plt.ylabel('loss')
         plt.savefig(os.path.join(save_plot_path, 'train_loss_' + model.__class__.__name__ + '.png'))    
         plt.clf()
-        
+
         plt.plot(range(epoch+1), val_loss, marker='o')  
         plt.xlabel('epoch')
         plt.ylabel('avg loss')
@@ -149,7 +149,7 @@ def train(csv_file, data_dir, save_dir, num_classes, num_epochs):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--csv', type=pathlib.Path, default='data/milestone/milestone_metadata.csv', help='path to metadata csv')
     parser.add_argument('-d', '--data_dir', type=pathlib.Path, default='data/milestone/milestone_images', help='path to data directory containing images')
     parser.add_argument('-s', '--save_dir', type=pathlib.Path, default='saved_artifacts/', help='path to save model artifacts (plots, ckpts)')
